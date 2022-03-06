@@ -8,15 +8,21 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
-
+var configuration = builder.Configuration;
 var services = builder.Services;
 services.AddControllersWithViews(opt =>
 {
     opt.Conventions.Add(new TestConvention());
 });
-services.AddDbContext<WeatherReportsDB>(opt =>
-opt.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+
+
+
+
+services.AddDbContext<WeatherReportsDB>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
