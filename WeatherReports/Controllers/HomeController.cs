@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using WeatherReports.DAL.Context;
 using WeatherReports.Models;
 
 namespace WeatherReports.Controllers
@@ -18,7 +19,11 @@ namespace WeatherReports.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Archive()
+        {
+            return View();
+        }
+        public IActionResult FileDown()
         {
             return View();
         }
@@ -28,5 +33,8 @@ namespace WeatherReports.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-    }
+        
+        
+    
+}
 }
