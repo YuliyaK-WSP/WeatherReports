@@ -27,10 +27,12 @@ namespace WeatherReports.Controllers
             foreach (var uploadedFile in uploads)
             {
 
-               
+
 
                 IWorkbook Workbook;
-                DataTable table = new DataTable();
+
+
+               
                 try
                 {
                     using (var fileStream = uploadedFile.OpenReadStream())
@@ -38,7 +40,7 @@ namespace WeatherReports.Controllers
                         //XSSFWorkbook подходит для формата XLSX, HSSFWorkbook подходит для формата XLS.
                         //string fileExt = uploadedFile.FileName.Substring(uploadedFile.FileName.LastIndexOf('.') + 1, uploadedFile.FileName.Length)
 
-                            //var strFileType = strFileName.substring(strFileName.lastIndexOf('.') + 1, strFileName.length);
+                        //var strFileType = strFileName.substring(strFileName.lastIndexOf('.') + 1, strFileName.length);
                         string fileExt = Path.GetExtension(uploadedFile.FileName).ToLower();
                         if (fileExt == ".xls")
                         {
@@ -59,104 +61,139 @@ namespace WeatherReports.Controllers
                     throw ex;
                 }
                 //Положение на первом листе
-                ISheet sheet = Workbook.GetSheetAt(0);
-                //Первая строка - это строка заголовка
-                IRow headerRow = sheet.GetRow(2);
-                int cellCount = headerRow.LastCellNum;
-                int rowCount = sheet.LastRowNum;
-
-                //Добавить столбец заголовка в цикл
-                for (int i = headerRow.FirstCellNum; i < cellCount; i++)
+                
+                
+                   
+                    int count = Workbook.NumberOfSheets;
+                for(int k = 0; k < count; k++)
                 {
-                    DataColumn column = new DataColumn(headerRow.GetCell(i).StringCellValue);
-                    table.Columns.Add(column);
-                }
-
-                //данные
-                for (int i = (sheet.FirstRowNum + 4); i <= rowCount; i++)
-                {
-                    IRow row = sheet.GetRow(i);
-                    DataRow dataRow = table.NewRow();
-                    if (row != null)
+                    ISheet sheet = Workbook.GetSheetAt(k);
+                    DataTable table = new DataTable();
+                    //Первая строка - это строка заголовка
+                    IRow headerRow = sheet.GetRow(2);
+                    int cellCount = headerRow.LastCellNum;
+                    int rowCount = sheet.LastRowNum;
+                    //Добавить столбец заголовка в цикл
+                    for (int i = headerRow.FirstCellNum; i < cellCount; i++)
                     {
-                        for (int j = row.FirstCellNum; j < cellCount; j++)
+                        DataColumn column = new DataColumn(headerRow.GetCell(i).StringCellValue);
+                        table.Columns.Add(column);
+                    }
+
+                    //данные
+                    for (int i = (sheet.FirstRowNum + 4); i <= rowCount; i++)
+                    {
+                        IRow row = sheet.GetRow(i);
+                        DataRow dataRow = table.NewRow();
+                        if (row != null)
                         {
-                            if (row.GetCell(j) != null)
+                            for (int j = row.FirstCellNum; j < cellCount; j++)
                             {
-                                dataRow[j] = GetCellValue(row.GetCell(j));
+                                if (row.GetCell(j) != null)
+                                {
+                                    dataRow[j] = GetCellValue(row.GetCell(j));
+                                }
                             }
                         }
+                        table.Rows.Add(dataRow);
                     }
-                    table.Rows.Add(dataRow);
+
+                    DataTable excelTable = new DataTable();
+                    excelTable = table;
+
+                    DataTable dbdata = new DataTable();
+                    dbdata.Columns.Add("Data");
+                    dbdata.Columns.Add("Time");
+                    dbdata.Columns.Add("Temperature");
+                    dbdata.Columns.Add("Humidity");
+                    dbdata.Columns.Add("Td");
+                    dbdata.Columns.Add("AtmosphericPressure");
+                    dbdata.Columns.Add("WindDirection");
+                    dbdata.Columns.Add("WindSpeed");
+                    dbdata.Columns.Add("Cloudiness");
+                    dbdata.Columns.Add("H");
+                    dbdata.Columns.Add("VV");
+                    dbdata.Columns.Add("WeatherPhenomena");
+
+                    for (int i = 0; i < excelTable.Rows.Count; i++)
+                    {
+                        DataRow dr = excelTable.Rows[i];
+                        DataRow dr_ = dbdata.NewRow();
+                        dr_["Data"] = dr["Дата"];
+                        dr_["Time"] = dr["Время"];
+                        dr_["Temperature"] = dr["Т"];
+                        dr_["Humidity"] = dr["Отн. влажность"];
+                        dr_["Td"] = dr["Td"];
+                        dr_["AtmosphericPressure"] = dr["Атм. давление,"];
+                        dr_["WindDirection"] = dr["Направление"];
+                        if (dr["Скорость"].ToString().Trim() == "")
+                        {
+                            dr_["WindSpeed"] = 0;
+                        }
+                        else
+                        {
+                            dr_["WindSpeed"] = dr["Скорость"];
+                        }
+                        
+                        if (dr["Облачность,"].ToString().Trim() == "")
+                        {
+                            dr_["Cloudiness"] = 0;
+                        }
+                        else
+                        {
+                            dr_["Cloudiness"] = Convert.ToInt32(dr["Облачность,"]);
+                        }
+                        //dr_["Cloudiness"] = dr["Облачность,"];
+                        if (dr["h"].ToString().Trim() == "")
+                        {
+                            dr_["H"] = 0;
+                        }
+                        else
+                        {
+                            dr_["H"] = Convert.ToInt32(dr["h"]);
+                        }
+                        if (dr["VV"].ToString().Trim() == "")
+                        {
+                            dr_["VV"] = 0;
+                        }
+                        else
+                        {
+                            dr_["VV"] = Convert.ToString(dr["VV"]);
+                        }
+
+                        dr_["WeatherPhenomena"] = Convert.ToString(dr["Погодные явления"]);
+
+
+                        dbdata.Rows.Add(dr_);
+                    }
+                    RemoveEmpty(dbdata);
+
+                    //string constr = System.Configuration.ConfigurationManager.ConnectionStrings[0].ConnectionString;
+                    //string constr = System.Configuration.ConfigurationManager.AppSettings["MyDefaultConnection"];
+                    string constr = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog= WeatherReports.db;";
+                    SqlBulkCopyByDatatable(constr, "Weather", dbdata);
+
                 }
 
-                DataTable excelTable = new DataTable();
-                excelTable = table;
-
-                DataTable dbdata = new DataTable();
-                dbdata.Columns.Add("Data");
-                dbdata.Columns.Add("Time");
-                dbdata.Columns.Add("Temperature");
-                dbdata.Columns.Add("Humidity");
-                dbdata.Columns.Add("Td");
-                dbdata.Columns.Add("AtmosphericPressure");
-                dbdata.Columns.Add("WindDirection");
-                dbdata.Columns.Add("WindSpeed");
-                dbdata.Columns.Add("Cloudiness", typeof(int));
-                dbdata.Columns.Add("H", typeof(int));
-                dbdata.Columns.Add("VV", typeof(int));
-                dbdata.Columns.Add("WeatherPhenomena");
-
-                for (int i = 0; i < excelTable.Rows.Count; i++)
-                {
-                    DataRow dr = excelTable.Rows[i];
-                    DataRow dr_ = dbdata.NewRow();
-                    dr_["Data"] = dr["Дата"];
-                    dr_["Time"] = dr["Время"];
-                    dr_["Temperature"] = dr["Т"];
-                    dr_["Humidity"] = dr["Отн. влажность"];
-                    dr_["Td"] = dr["Td"];
-                    dr_["AtmosphericPressure"] = dr["Атм. давление,"];
-                    dr_["WindDirection"] = dr["Направление"];
-                    dr_["WindSpeed"] = dr["Скорость"];
-                    if (dr["Облачность,"].ToString().Trim() == "")
-                    {
-                        dr_["Cloudiness"] = 0;
-                    }
-                    else
-                    {
-                        dr_["Cloudiness"] = Convert.ToInt32(dr["Облачность,"]);
-                    }
-                    //dr_["Cloudiness"] = dr["Облачность,"];
-                    dr_["H"] = Convert.ToInt32(dr["h"]);
-                    if (dr["VV"].ToString().Trim() == "")
-                    {
-                        dr_["VV"] = 0;
-                    }
-                    else
-                    {
-                        dr_["VV"] = Convert.ToInt32(dr["VV"]);
-                    }
-                    
-                    dr_["WeatherPhenomena"] = dr["Погодные явления"];
-                    
-
-                    dbdata.Rows.Add(dr_);
-                }
-                RemoveEmpty(dbdata);
-
-                //string constr = System.Configuration.ConfigurationManager.ConnectionStrings[0].ConnectionString;
-                //string constr = System.Configuration.ConfigurationManager.AppSettings["MyDefaultConnection"];
-                string constr = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog= WeatherReports.db;";
-                SqlBulkCopyByDatatable(constr, "Weather", dbdata);
             }
             return View();
         }
-        public ActionResult Archive()
+        public ActionResult Archive(string month, string year)
         {
+            string s1 = month;//
+            string s2 = year;//
             string constr = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog= WeatherReports.db;";
-            string inSql = "SELECT * FROM Weather ORDER BY Data, Time";
-            
+            string inSql;
+            if(s1 == null && s2 == null)
+            {
+                inSql = "SELECT * FROM Weather ORDER BY Data, Time";
+            }
+            else
+            {
+                s1 = s1 ?? "null";
+                s2 = s2 ?? "null";
+                inSql = $"SELECT * FROM Weather WHERE ({s1} IS NULL OR SUBSTRING(data, 4, 2) = {s1}) AND ({s2} IS NULL OR SUBSTRING(data, 7, 4) = {s2}) ORDER BY Data, Time";
+            }
             var weatherList = new List<WeatherViewModel>();
             using(SqlConnection conn = new SqlConnection(constr))
             {
@@ -166,18 +203,18 @@ namespace WeatherReports.Controllers
                 while (sqlReader.Read())
                 {
                     var weatherRow = new WeatherViewModel();
-                    weatherRow.Data = DateOnly.FromDateTime((DateTime)sqlReader["Data"]);
-                    weatherRow.Time = TimeOnly.FromDateTime((DateTime)sqlReader["Time"]);
-                    weatherRow.Temperature = (double)sqlReader["Temperature"];
-                    weatherRow.Humidity= (int)sqlReader["Humidity"];
-                    weatherRow.Td = (double)sqlReader["Td"];
-                    weatherRow.AtmosphericPressure = (int)sqlReader["AtmosphericPressure"];
+                    weatherRow.Data = Convert.ToString(sqlReader["Data"]);
+                    weatherRow.Time = Convert.ToString(sqlReader["Time"]);
+                    weatherRow.Temperature = Convert.ToString(sqlReader["Temperature"]);
+                    weatherRow.Humidity= Convert.ToString(sqlReader["Humidity"]);
+                    weatherRow.Td = Convert.ToString(sqlReader["Td"]);
+                    weatherRow.AtmosphericPressure = Convert.ToString(sqlReader["AtmosphericPressure"]);
                     weatherRow.WindDirection = (string)sqlReader["WindDirection"];
-                    weatherRow.WindSpeed = (int)sqlReader["WindSpeed"];
-                    weatherRow.Cloudiness = (int)sqlReader["Cloudiness"];
-                    weatherRow.H = (int)sqlReader["H"];
-                    weatherRow.VV = (int)sqlReader["VV"];
-                    weatherRow.WeatherPhenomena = Convert.ToString((sqlReader["WeatherPhenomena"]));
+                    weatherRow.WindSpeed = (string)sqlReader["WindSpeed"];
+                    weatherRow.Cloudiness = (string)sqlReader["Cloudiness"];
+                    weatherRow.H = (string)sqlReader["H"];
+                    weatherRow.VV = (string)sqlReader["VV"];
+                    weatherRow.WeatherPhenomena = Convert.ToString(sqlReader["WeatherPhenomena"]);
 
 
 

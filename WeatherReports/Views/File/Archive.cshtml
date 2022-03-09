@@ -4,8 +4,19 @@
 @{
     ViewData["Title"] = "Архивные файлы";
 }
+@using (Html.BeginForm("Filter", "Archive", FormMethod.Post)) 
+{
+    <div class="labelrow">
+        <label >Месяц</label>
+<input type="text"name="month" id="month"/>
+<label>Год</label>
+<input type="text"name="year" id="year"/>
+<input type="submit" value="Filter" />
+    </div>
 
+}
 <div class="text-center">
+    
     <table  class="table">
         
             <tr>
@@ -21,12 +32,9 @@
                 <th>@Html.DisplayNameFor(m => m.H)</th>
                 <th>@Html.DisplayNameFor(m => m.WeatherPhenomena)</th>
                 
-               
             </tr>
-       
-    
 
-    <a asp-action="Archive" asp-controller="File">Тык</a>
+    
 
     @foreach (var item in Model)
     {

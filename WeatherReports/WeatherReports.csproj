@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\File\Partial\" />
     <Folder Include="wwwroot\Files\" />
   </ItemGroup>
 

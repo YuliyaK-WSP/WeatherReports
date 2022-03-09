@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -15,17 +14,17 @@ namespace WeatherReports.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Data = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Time = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Temperature = table.Column<double>(type: "float", nullable: false),
-                    Humidity = table.Column<int>(type: "int", nullable: false),
-                    Td = table.Column<double>(type: "float", nullable: false),
-                    AtmosphericPressure = table.Column<int>(type: "int", nullable: false),
+                    Data = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Time = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Temperature = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Humidity = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Td = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AtmosphericPressure = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     WindDirection = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WindSpeed = table.Column<int>(type: "int", nullable: false),
-                    Cloudiness = table.Column<int>(type: "int", nullable: false),
-                    H = table.Column<int>(type: "int", nullable: false),
-                    VV = table.Column<int>(type: "int", nullable: false),
+                    WindSpeed = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Cloudiness = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    H = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VV = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     WeatherPhenomena = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>

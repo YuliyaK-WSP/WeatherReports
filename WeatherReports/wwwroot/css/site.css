@@ -16,3 +16,9 @@ html {
 body {
   margin-bottom: 60px;
 }
+.pagination{
+    display:inline-block;
+    margin-bottom:25px;
+    margin-top:0;
+    padding-left:15px;
+}
