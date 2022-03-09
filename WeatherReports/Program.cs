@@ -27,7 +27,8 @@ services.AddControllersWithViews(opt =>
 
 
 
-services.AddDbContext<WeatherReportsDB>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+services.AddDbContext<WeatherReportsDB>(options => 
+options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 var app = builder.Build();

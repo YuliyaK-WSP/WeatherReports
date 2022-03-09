@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Configuration;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,13 +8,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Data;
-using WeatherReports.logic;
+
+
 using Microsoft.Data.SqlClient;
+using WeatherReports.ViewModels;
 
 namespace WeatherReports.Controllers
 {
@@ -25,11 +27,7 @@ namespace WeatherReports.Controllers
             foreach (var uploadedFile in uploads)
             {
 
-                //string path = Path.GetDirectoryName(uploadedFile.op);
-                /*var fileName = file.FileName;
-                var filePath = Server.MapPath(string.Format("~/{0}", "Files"));
-                string path = Path.Combine(filePath, fileName);
-                file.SaveAs(path);*/
+               
 
                 IWorkbook Workbook;
                 DataTable table = new DataTable();
@@ -96,26 +94,98 @@ namespace WeatherReports.Controllers
                 excelTable = table;
 
                 DataTable dbdata = new DataTable();
-                dbdata.Columns.Add("email");
-                dbdata.Columns.Add("pwd");
-                dbdata.Columns.Add("logintime");
+                dbdata.Columns.Add("Data");
+                dbdata.Columns.Add("Time");
+                dbdata.Columns.Add("Temperature");
+                dbdata.Columns.Add("Humidity");
+                dbdata.Columns.Add("Td");
+                dbdata.Columns.Add("AtmosphericPressure");
+                dbdata.Columns.Add("WindDirection");
+                dbdata.Columns.Add("WindSpeed");
+                dbdata.Columns.Add("Cloudiness", typeof(int));
+                dbdata.Columns.Add("H", typeof(int));
+                dbdata.Columns.Add("VV", typeof(int));
+                dbdata.Columns.Add("WeatherPhenomena");
 
                 for (int i = 0; i < excelTable.Rows.Count; i++)
                 {
                     DataRow dr = excelTable.Rows[i];
                     DataRow dr_ = dbdata.NewRow();
-                    dr_["email"] = dr["почтовый ящик"];
-                    dr_["pwd"] = dr["пароль"];
-                    dr_["logintime"] = dr["время"];
+                    dr_["Data"] = dr["Дата"];
+                    dr_["Time"] = dr["Время"];
+                    dr_["Temperature"] = dr["Т"];
+                    dr_["Humidity"] = dr["Отн. влажность"];
+                    dr_["Td"] = dr["Td"];
+                    dr_["AtmosphericPressure"] = dr["Атм. давление,"];
+                    dr_["WindDirection"] = dr["Направление"];
+                    dr_["WindSpeed"] = dr["Скорость"];
+                    if (dr["Облачность,"].ToString().Trim() == "")
+                    {
+                        dr_["Cloudiness"] = 0;
+                    }
+                    else
+                    {
+                        dr_["Cloudiness"] = Convert.ToInt32(dr["Облачность,"]);
+                    }
+                    //dr_["Cloudiness"] = dr["Облачность,"];
+                    dr_["H"] = Convert.ToInt32(dr["h"]);
+                    if (dr["VV"].ToString().Trim() == "")
+                    {
+                        dr_["VV"] = 0;
+                    }
+                    else
+                    {
+                        dr_["VV"] = Convert.ToInt32(dr["VV"]);
+                    }
+                    
+                    dr_["WeatherPhenomena"] = dr["Погодные явления"];
+                    
+
                     dbdata.Rows.Add(dr_);
                 }
                 RemoveEmpty(dbdata);
 
-                string constr = System.Configuration.ConfigurationManager.AppSettings["meixinEntities_"];
-
-                SqlBulkCopyByDatatable(constr, "m_user1", dbdata);
+                //string constr = System.Configuration.ConfigurationManager.ConnectionStrings[0].ConnectionString;
+                //string constr = System.Configuration.ConfigurationManager.AppSettings["MyDefaultConnection"];
+                string constr = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog= WeatherReports.db;";
+                SqlBulkCopyByDatatable(constr, "Weather", dbdata);
             }
             return View();
+        }
+        public ActionResult Archive()
+        {
+            string constr = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog= WeatherReports.db;";
+            string inSql = "SELECT * FROM Weather ORDER BY Data, Time";
+            
+            var weatherList = new List<WeatherViewModel>();
+            using(SqlConnection conn = new SqlConnection(constr))
+            {
+                conn.Open();
+                SqlCommand sqlCmd = new SqlCommand(inSql, conn);
+                SqlDataReader sqlReader = sqlCmd.ExecuteReader();
+                while (sqlReader.Read())
+                {
+                    var weatherRow = new WeatherViewModel();
+                    weatherRow.Data = DateOnly.FromDateTime((DateTime)sqlReader["Data"]);
+                    weatherRow.Time = TimeOnly.FromDateTime((DateTime)sqlReader["Time"]);
+                    weatherRow.Temperature = (double)sqlReader["Temperature"];
+                    weatherRow.Humidity= (int)sqlReader["Humidity"];
+                    weatherRow.Td = (double)sqlReader["Td"];
+                    weatherRow.AtmosphericPressure = (int)sqlReader["AtmosphericPressure"];
+                    weatherRow.WindDirection = (string)sqlReader["WindDirection"];
+                    weatherRow.WindSpeed = (int)sqlReader["WindSpeed"];
+                    weatherRow.Cloudiness = (int)sqlReader["Cloudiness"];
+                    weatherRow.H = (int)sqlReader["H"];
+                    weatherRow.VV = (int)sqlReader["VV"];
+                    weatherRow.WeatherPhenomena = Convert.ToString((sqlReader["WeatherPhenomena"]));
+
+
+
+                    weatherList.Add(weatherRow);
+                }
+            }
+            IEnumerable<WeatherViewModel> model = weatherList as IEnumerable<WeatherViewModel>;
+            return View(model);
         }
         private static string GetCellValue(ICell cell)
         {
@@ -196,6 +266,7 @@ namespace WeatherReports.Controllers
                         throw ex;
                     }
                 }
+
             }
         }
     }

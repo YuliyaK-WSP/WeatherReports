@@ -1,6 +1,72 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
-}
-<h1>@ViewData["Title"]</h1>
+﻿
+@model IEnumerable<WeatherReports.ViewModels.WeatherViewModel>
 
-<p>Use this page to detail your site's privacy policy.</p>
+@{
+    ViewData["Title"] = "Архивные файлы";
+}
+
+<div class="text-center">
+    <table  class="table">
+        
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.Data)</th>
+                <th>@Html.DisplayNameFor(m => m.Time)</th>
+                <th>@Html.DisplayNameFor(m => m.Temperature)</th>
+                <th>@Html.DisplayNameFor(m => m.Humidity)</th>
+                <th>@Html.DisplayNameFor(m => m.Td)</th>
+                <th>@Html.DisplayNameFor(m => m.AtmosphericPressure)</th>
+                <th>@Html.DisplayNameFor(m => m.WindDirection)</th>
+                <th>@Html.DisplayNameFor(m => m.WindSpeed)</th>
+                <th>@Html.DisplayNameFor(m => m.Cloudiness)</th>
+                <th>@Html.DisplayNameFor(m => m.H)</th>
+                <th>@Html.DisplayNameFor(m => m.WeatherPhenomena)</th>  
+            </tr>
+       
+    </table>
+
+    <a asp-action="Archive" asp-controller="File">Тык</a>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Data)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Time)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Temperature)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Humidity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Td)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AtmosphericPressure)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WindDirection)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WindSpeed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cloudiness)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.H)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WeatherPhenomena)
+            </td>
+            
+
+            
+            
+        </tr>
+    }
+</div>
+
+

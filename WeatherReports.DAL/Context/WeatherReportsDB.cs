@@ -15,8 +15,12 @@ namespace WeatherReports.DAL.Context
         public DbSet<Weather> WeatherReports { get; set; }
         public WeatherReportsDB(DbContextOptions<WeatherReportsDB> options):base(options)
         {
-
+            
         }
-        
+        protected override void OnModelCreating(ModelBuilder db)
+        {
+            base.OnModelCreating(db);
+        }
+
     }
 }

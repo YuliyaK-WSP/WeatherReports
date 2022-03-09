@@ -22,6 +22,7 @@ namespace WeatherReports.Domain.Entities.Base
         public int WindSpeed { get; set; }
         public int Cloudiness { get; set; }
         public int H { get; set; }
+        
         public int VV { get; set; }
         public string WeatherPhenomena { get; set; }
     }
