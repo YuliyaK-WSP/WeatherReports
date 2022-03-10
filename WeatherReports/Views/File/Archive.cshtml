@@ -1,0 +1,58 @@
+﻿
+@model IEnumerable<WeatherReports.ViewModels.WeatherViewModel>
+
+@{
+    ViewData["Title"] = "Архивные файлы";
+}
+@using (Html.BeginForm("Filter", "Archive", FormMethod.Post)) 
+{
+    <div class="labelrow">
+        <label >Месяц</label>
+<input type="text"name="month" id="month"/>
+<label>Год</label>
+<input type="text"name="year" id="year"/>
+<input type="submit" value="Filter" />
+    </div>
+
+}
+<div class="text-center">
+    
+    <table  class="table">
+        
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.Data)</th>
+                <th>@Html.DisplayNameFor(m => m.Time)</th>
+                <th>@Html.DisplayNameFor(m => m.Temperature)</th>
+                <th>@Html.DisplayNameFor(m => m.Humidity)</th>
+                <th>@Html.DisplayNameFor(m => m.Td)</th>
+                <th>@Html.DisplayNameFor(m => m.AtmosphericPressure)</th>
+                <th>@Html.DisplayNameFor(m => m.WindDirection)</th>
+                <th>@Html.DisplayNameFor(m => m.WindSpeed)</th>
+                <th>@Html.DisplayNameFor(m => m.Cloudiness)</th>
+                <th>@Html.DisplayNameFor(m => m.H)</th>
+                <th>@Html.DisplayNameFor(m => m.WeatherPhenomena)</th>
+                
+            </tr>
+
+    
+
+    @foreach (var item in Model)
+    {
+        <tr><td>@item.Data</td>
+            <td>@item.Time</td>
+            <td>@item.Temperature</td>
+            <td>@item.Humidity</td>
+            <td>@item.Td</td>
+            <td>@item.AtmosphericPressure</td>
+            <td>@item.WindDirection</td>
+            <td>@item.WindSpeed</td>
+            <td>@item.Cloudiness</td>
+            <td>@item.H</td>
+            <td>@item.WeatherPhenomena</td>
+
+            </tr>
+    }
+    </table>
+</div>
+
+

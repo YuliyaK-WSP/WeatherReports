@@ -8,17 +8,17 @@ namespace WeatherReports.Models
 {
     public class Weather
     {
-        public DateOnly Data { get; set; }
-        public TimeOnly Time { get; set; }
-        public double Temperature { get; set; }
-        public int Humidity { get; set; }
-        public double Td { get; set; }
-        public int AtmosphericPressure { get; set; }
+        public string Data { get; set; }
+        public string Time { get; set; }
+        public string Temperature { get; set; }
+        public string Humidity { get; set; }
+        public string Td { get; set; }
+        public string AtmosphericPressure { get; set; }
         public string WindDirection { get; set; }
-        public int WindSpeed { get; set; }
-        public int Cloudiness { get; set; }
-        public int H { get; set; }
-        public int VV { get; set; }
+        public string WindSpeed { get; set; }
+        public string Cloudiness { get; set; }
+        public string H { get; set; }
+        public string VV { get; set; }
         public string WeatherPhenomena { get; set; }
     }
 }

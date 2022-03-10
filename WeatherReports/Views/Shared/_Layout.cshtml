@@ -23,7 +23,10 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Главная</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Архивы</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="FileDown">Загрузка</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="File" asp-action="Archive">Архивы</a>
                         </li>
                     </ul>
                 </div>
@@ -38,7 +41,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2022 - WeatherReports - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2022 - WeatherReports - <a asp-area="" asp-controller="Home" asp-action="Archive">Archive</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
