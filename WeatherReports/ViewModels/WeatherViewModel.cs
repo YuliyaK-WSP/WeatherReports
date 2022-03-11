@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WeatherReports.Models;
 
 namespace WeatherReports.ViewModels
 {
@@ -33,5 +34,6 @@ namespace WeatherReports.ViewModels
         public string VV { get; set; }
         [Display(Name = "Погодные явления")]
         public string WeatherPhenomena { get; set; }
+        public PageViewModel PageViewModel { get; set; }
     }
 }
