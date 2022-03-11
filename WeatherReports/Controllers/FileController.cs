@@ -53,10 +53,7 @@ namespace WeatherReports.Controllers
                 {
                     using (var fileStream = uploadedFile.OpenReadStream())
                     {
-                        //XSSFWorkbook подходит для формата XLSX, HSSFWorkbook подходит для формата XLS.
-                        //string fileExt = uploadedFile.FileName.Substring(uploadedFile.FileName.LastIndexOf('.') + 1, uploadedFile.FileName.Length)
-
-                        //var strFileType = strFileName.substring(strFileName.lastIndexOf('.') + 1, strFileName.length);
+                        
                         string fileExt = Path.GetExtension(uploadedFile.FileName).ToLower();
                         if (fileExt == ".xls")
                         {
@@ -76,7 +73,7 @@ namespace WeatherReports.Controllers
                 {
                     throw ex;
                 }
-                //Положение на первом листе
+                //Положение на первом и последующих
                 
                 
                    
@@ -159,7 +156,7 @@ namespace WeatherReports.Controllers
                         {
                             dr_["Cloudiness"] = Convert.ToInt32(dr["Облачность,"]);
                         }
-                        //dr_["Cloudiness"] = dr["Облачность,"];
+                        
                         if (dr["h"].ToString().Trim() == "")
                         {
                             dr_["H"] = 0;
@@ -183,6 +180,7 @@ namespace WeatherReports.Controllers
                         dbdata.Rows.Add(dr_);
                     }
                     RemoveEmpty(dbdata);
+
 
                     //string constr = System.Configuration.ConfigurationManager.ConnectionStrings[0].ConnectionString;
                     //string constr = System.Configuration.ConfigurationManager.AppSettings["MyDefaultConnection"];
