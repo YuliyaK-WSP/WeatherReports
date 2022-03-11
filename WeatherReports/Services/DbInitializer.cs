@@ -11,14 +11,15 @@ namespace WeatherReports.Services
 {
     public class DbInitializer:IDbInitializer
     {
-        private readonly WeatherReportsDB _db;
+        private readonly WeatherReportsContext _db;
 
         public ILogger<DbInitializer> _Logger;
 
-        public DbInitializer(WeatherReportsDB db,ILogger<DbInitializer>Logger)
+        public DbInitializer(WeatherReportsContext db,ILogger<DbInitializer>Logger)
         {
-            _db = _db;
+            _db = db;
             _Logger = Logger;
+            
         }
         public async Task<bool> RemoveAsync(CancellationToken Cancel = default)
         {

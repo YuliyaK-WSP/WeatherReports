@@ -15,6 +15,8 @@ using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 var configuration = builder.Configuration;
@@ -27,7 +29,7 @@ services.AddControllersWithViews(opt =>
 
 
 
-services.AddDbContext<WeatherReportsDB>(options => 
+services.AddDbContext<WeatherReportsContext>(options => 
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 

@@ -10,7 +10,7 @@ using WeatherReports.DAL.Context;
 
 namespace WeatherReports.DAL.Migrations
 {
-    [DbContext(typeof(WeatherReportsDB))]
+    [DbContext(typeof(WeatherReportsContext))]
     [Migration("20220309143125_Initial")]
     partial class Initial
     {

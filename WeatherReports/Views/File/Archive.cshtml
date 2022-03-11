@@ -1,9 +1,10 @@
-﻿
-@model IEnumerable<WeatherReports.ViewModels.WeatherViewModel>
-
+﻿@using WeatherReports.Domain.Entities.Base
+@using WeatherReports.Models
+@model ArchiveViewModel
 @{
     ViewData["Title"] = "Архивные файлы";
 }
+
 @using (Html.BeginForm("Filter", "Archive", FormMethod.Post)) 
 {
     <div class="labelrow">
@@ -20,23 +21,20 @@
     <table  class="table">
         
             <tr>
-                <th>@Html.DisplayNameFor(m => m.Data)</th>
-                <th>@Html.DisplayNameFor(m => m.Time)</th>
-                <th>@Html.DisplayNameFor(m => m.Temperature)</th>
-                <th>@Html.DisplayNameFor(m => m.Humidity)</th>
-                <th>@Html.DisplayNameFor(m => m.Td)</th>
-                <th>@Html.DisplayNameFor(m => m.AtmosphericPressure)</th>
-                <th>@Html.DisplayNameFor(m => m.WindDirection)</th>
-                <th>@Html.DisplayNameFor(m => m.WindSpeed)</th>
-                <th>@Html.DisplayNameFor(m => m.Cloudiness)</th>
-                <th>@Html.DisplayNameFor(m => m.H)</th>
-                <th>@Html.DisplayNameFor(m => m.WeatherPhenomena)</th>
-                
+                <th>Дата</th>
+                <th>Время</th>
+                <th>Темпеатура</th>
+                <th>Влажность</th>
+                <th>Td</th>
+                <th>Давление</th>
+                <th>Направление ветра</th>
+                <th>Скорость ветра</th>
+                <th>Облачность</th>
+                <th>H</th>
+                <th>Погодные явления</th>
             </tr>
 
-    
-
-    @foreach (var item in Model)
+    @foreach (Weather item in Model.Weathers)
     {
         <tr><td>@item.Data</td>
             <td>@item.Time</td>
@@ -53,6 +51,23 @@
             </tr>
     }
     </table>
+@if (Model.PageViewModel.HasPreviousPage)
+{
+    <a asp-action="Archive"
+       asp-route-page="@(Model.PageViewModel.PageNumber - 1)"
+       class="btn btn-outline-dark">
+        Назад
+    </a>
+}
+@if (Model.PageViewModel.HasNextPage)
+{
+    <a asp-action="Archive"
+       asp-route-page="@(Model.PageViewModel.PageNumber + 1)"
+       class="btn btn-outline-dark">
+        Вперед
+    </a>
+    <a>Стр. @Model.PageViewModel.PageNumber из @Model.PageViewModel.TotalPages</a>
+}
 </div>
 
 

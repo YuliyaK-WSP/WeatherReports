@@ -9,7 +9,7 @@ using WeatherReports.DAL.Context;
 
 namespace WeatherReports.DAL.Migrations
 {
-    [DbContext(typeof(WeatherReportsDB))]
+    [DbContext(typeof(WeatherReportsContext))]
     partial class WeatherReportsDBModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

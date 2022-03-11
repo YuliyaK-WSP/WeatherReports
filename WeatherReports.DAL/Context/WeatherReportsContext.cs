@@ -10,13 +10,18 @@ using WeatherReports.Domain.Entities.Base;
 
 namespace WeatherReports.DAL.Context
 {
-    public class WeatherReportsDB : DbContext
+    public class WeatherReportsContext : DbContext
     {
         public DbSet<Weather> WeatherReports { get; set; }
-        public WeatherReportsDB(DbContextOptions<WeatherReportsDB> options):base(options)
+        public WeatherReportsContext(DbContextOptions<WeatherReportsContext> options):base(options)
         {
-            
+            Database.EnsureCreated();
         }
+
+        public WeatherReportsContext()
+        {
+        }
+
         protected override void OnModelCreating(ModelBuilder db)
         {
             base.OnModelCreating(db);

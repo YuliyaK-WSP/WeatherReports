@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Configuration;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,19 +9,34 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using WeatherReports.Domain;
+using WeatherReports.ViewModels;
 using NPOI.HSSF.UserModel;
+using WeatherReports.DAL;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using WeatherReports.Models;
 using System.Data;
-
-
 using Microsoft.Data.SqlClient;
-using WeatherReports.ViewModels;
+using WeatherReports.DAL.Context;
+using WeatherReports.Domain.Entities.Base;
 
 namespace WeatherReports.Controllers
 {
     public class FileController : Controller
     {
+       private IConfiguration Configuration;
+        WeatherReportsContext db;
+       public FileController(IConfiguration _configuration, WeatherReportsContext context)
+        {
+            Configuration = _configuration;
+            this.db = context;
+        }
+        /*public FileController(WeatherReportsContext context)
+        {
+            this.db = context;
+        }*/
+
         [HttpPost]
         public ActionResult Import(IFormFileCollection uploads)
         {
@@ -165,8 +181,11 @@ namespace WeatherReports.Controllers
                     }
                     RemoveEmpty(dbdata);
 
-                    
-                    string constr = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog= WeatherReports.db;";
+
+                    //string constr = System.Configuration.ConfigurationManager.ConnectionStrings[0].ConnectionString;
+                    //string constr = System.Configuration.ConfigurationManager.AppSettings["MyDefaultConnection"];
+                    //string constr = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog= WeatherReports.db;";
+                    string constr = Configuration.GetConnectionString("DefaultConnection");
                     SqlBulkCopyByDatatable(constr, "Weather", dbdata);
 
                 }
@@ -174,11 +193,16 @@ namespace WeatherReports.Controllers
             }
             return View();
         }
-        public ActionResult Archive(string month, string year)
+        /*public ActionResult Archive(string month, string year)
         {
             string s1 = month;//
             string s2 = year;//
-            string constr = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog= WeatherReports.db;";
+            using (WeatherReportsContext db = new WeatherReportsContext())
+            {
+                var wdwd = db.WeatherReports;
+            }
+                //string constr = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog= WeatherReports.db;";
+                string constr = Configuration.GetConnectionString("DefaultConnection");
             string inSql;
             if(s1 == null && s2 == null)
             {
@@ -219,7 +243,7 @@ namespace WeatherReports.Controllers
             }
             IEnumerable<WeatherViewModel> model = weatherList as IEnumerable<WeatherViewModel>;
             return View(model);
-        }
+        }*/
         private static string GetCellValue(ICell cell)
         {
             if (cell == null)
@@ -301,6 +325,24 @@ namespace WeatherReports.Controllers
                 }
 
             }
+        }
+        public async Task<IActionResult> Archive(int page = 1, string month = "0", string year = "0")
+        {
+            string s1 = month;
+            string s2 = year;
+            int pageSize = 10;
+
+            IQueryable<Weather> source = db.WeatherReports;
+            var count = await source.CountAsync();
+            var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
+            ArchiveViewModel viewModel = new ArchiveViewModel
+            {
+                PageViewModel = pageViewModel,
+                Weathers = items
+            };
+            return View(viewModel);
         }
     }
 }
