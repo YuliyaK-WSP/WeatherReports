@@ -22,3 +22,14 @@ body {
     margin-top:0;
     padding-left:15px;
 }
+.container {
+    position: relative;
+}
+    .container .content {
+        position: absolute; /* Position the background text */
+        bottom: 0; /* At the bottom. Use top:0 to append it to the top */
+        background: rgba(28, 153, 86, 0.65); /* Black background with 0.5 opacity */
+        color: #f1f1f1; /* Grey text */
+        width: 100%; /* Full width */
+        padding: 20px; /* Some padding */
+    }
