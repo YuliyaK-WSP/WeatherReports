@@ -32,10 +32,7 @@ namespace WeatherReports.Controllers
             Configuration = _configuration;
             this.db = context;
         }
-        /*public FileController(WeatherReportsContext context)
-        {
-            this.db = context;
-        }*/
+        
 
         [HttpPost]
         public ActionResult Import(IFormFileCollection uploads)
@@ -182,9 +179,7 @@ namespace WeatherReports.Controllers
                     RemoveEmpty(dbdata);
 
 
-                    //string constr = System.Configuration.ConfigurationManager.ConnectionStrings[0].ConnectionString;
-                    //string constr = System.Configuration.ConfigurationManager.AppSettings["MyDefaultConnection"];
-                    //string constr = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog= WeatherReports.db;";
+                   
                     string constr = Configuration.GetConnectionString("DefaultConnection");
                     SqlBulkCopyByDatatable(constr, "Weather", dbdata);
 
@@ -193,57 +188,7 @@ namespace WeatherReports.Controllers
             }
             return View();
         }
-        /*public ActionResult Archive(string month, string year)
-        {
-            string s1 = month;//
-            string s2 = year;//
-            using (WeatherReportsContext db = new WeatherReportsContext())
-            {
-                var wdwd = db.WeatherReports;
-            }
-                //string constr = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog= WeatherReports.db;";
-                string constr = Configuration.GetConnectionString("DefaultConnection");
-            string inSql;
-            if(s1 == null && s2 == null)
-            {
-                inSql = "SELECT * FROM Weather ORDER BY Data, Time";
-            }
-            else
-            {
-                s1 = s1 ?? "null";
-                s2 = s2 ?? "null";
-                inSql = $"SELECT * FROM Weather WHERE ({s1} IS NULL OR SUBSTRING(data, 4, 2) = {s1}) AND ({s2} IS NULL OR SUBSTRING(data, 7, 4) = {s2}) ORDER BY Data, Time";
-            }
-            var weatherList = new List<WeatherViewModel>();
-            using(SqlConnection conn = new SqlConnection(constr))
-            {
-                conn.Open();
-                SqlCommand sqlCmd = new SqlCommand(inSql, conn);
-                SqlDataReader sqlReader = sqlCmd.ExecuteReader();
-                while (sqlReader.Read())
-                {
-                    var weatherRow = new WeatherViewModel();
-                    weatherRow.Data = Convert.ToString(sqlReader["Data"]);
-                    weatherRow.Time = Convert.ToString(sqlReader["Time"]);
-                    weatherRow.Temperature = Convert.ToString(sqlReader["Temperature"]);
-                    weatherRow.Humidity= Convert.ToString(sqlReader["Humidity"]);
-                    weatherRow.Td = Convert.ToString(sqlReader["Td"]);
-                    weatherRow.AtmosphericPressure = Convert.ToString(sqlReader["AtmosphericPressure"]);
-                    weatherRow.WindDirection = (string)sqlReader["WindDirection"];
-                    weatherRow.WindSpeed = (string)sqlReader["WindSpeed"];
-                    weatherRow.Cloudiness = (string)sqlReader["Cloudiness"];
-                    weatherRow.H = (string)sqlReader["H"];
-                    weatherRow.VV = (string)sqlReader["VV"];
-                    weatherRow.WeatherPhenomena = Convert.ToString(sqlReader["WeatherPhenomena"]);
-
-
-
-                    weatherList.Add(weatherRow);
-                }
-            }
-            IEnumerable<WeatherViewModel> model = weatherList as IEnumerable<WeatherViewModel>;
-            return View(model);
-        }*/
+       
         private static string GetCellValue(ICell cell)
         {
             if (cell == null)
@@ -326,21 +271,37 @@ namespace WeatherReports.Controllers
 
             }
         }
-        public async Task<IActionResult> Archive(int page = 1, string month = "0", string year = "0")
+        public async Task<IActionResult> Archive(int page = 1, string month = "", string year = "")
         {
+
             string s1 = month;
             string s2 = year;
             int pageSize = 10;
 
-            IQueryable<Weather> source = db.WeatherReports;
+            IQueryable<Weather> source = db.WeatherReports.OrderBy(s => s.Data).ThenBy(s => s.Time);
+
+
+            if (!String.IsNullOrEmpty(month))
+            {
+                
+                source = source.Where(p => p.Data.Substring(3,2) == s1);
+            }
+
+            if (!String.IsNullOrEmpty(year))
+            {
+                source = source.Where(p => p.Data.Substring(6, 4) == s2);
+            }
+
             var count = await source.CountAsync();
             var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-
+            // Модель представления
             PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
             ArchiveViewModel viewModel = new ArchiveViewModel
             {
                 PageViewModel = pageViewModel,
-                Weathers = items
+                Weathers = items,
+                SelectedMonth = s1,
+                SelectedYear = s2
             };
             return View(viewModel);
         }

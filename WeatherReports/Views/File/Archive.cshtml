@@ -5,69 +5,81 @@
     ViewData["Title"] = "Архивные файлы";
 }
 
-@using (Html.BeginForm("Filter", "Archive", FormMethod.Post)) 
+@using (Html.BeginForm("Archive", "File", FormMethod.Post))
 {
-    <div class="labelrow">
-        <label >Месяц</label>
-<input type="text"name="month" id="month"/>
-<label>Год</label>
-<input type="text"name="year" id="year"/>
-<input type="submit" value="Фильтр" class="btn btn-outline-dark" />
-    </div>
+    <form method="get">
+        <div class="row-fluid">
+        <div>
+            <label>Месяц</label>
+            <input type="search" name="month" id="month" class="form-control" value = "@Model.SelectedMonth" style="width:200px; height:30px"/>
+        </div>
 
-}
-<div class="text-center">
-    
-    <table  class="table">
-        
+            <div class="labelrow">
+                <label>Год</label>
+            <input type="search" name="year" id="year" class="form-control"value = "@Model.SelectedYear"style="width:200px; height:30px"/>
+            </div>
+            
+        <input type="submit" value="Фильтр" class="btn btn-outline-dark" style="margin-top:20px" />
+        </div>
+        <div class="text-center">
+
+    <table class="table">
+
+        <tr>
+            <th>Дата</th>
+            <th>Время</th>
+            <th>Темпеатура</th>
+            <th>Влажность</th>
+            <th>Td</th>
+            <th>Давление</th>
+            <th>Направление ветра</th>
+            <th>Скорость ветра</th>
+            <th>Облачность</th>
+            <th>H</th>
+            <th>Погодные явления</th>
+        </tr>
+
+        @foreach (Weather item in Model.Weathers)
+        {
             <tr>
-                <th>Дата</th>
-                <th>Время</th>
-                <th>Темпеатура</th>
-                <th>Влажность</th>
-                <th>Td</th>
-                <th>Давление</th>
-                <th>Направление ветра</th>
-                <th>Скорость ветра</th>
-                <th>Облачность</th>
-                <th>H</th>
-                <th>Погодные явления</th>
-            </tr>
-
-    @foreach (Weather item in Model.Weathers)
-    {
-        <tr><td>@item.Data</td>
-            <td>@item.Time</td>
-            <td>@item.Temperature</td>
-            <td>@item.Humidity</td>
-            <td>@item.Td</td>
-            <td>@item.AtmosphericPressure</td>
-            <td>@item.WindDirection</td>
-            <td>@item.WindSpeed</td>
-            <td>@item.Cloudiness</td>
-            <td>@item.H</td>
-            <td>@item.WeatherPhenomena</td>
+                <td>@item.Data</td>
+                <td>@item.Time</td>
+                <td>@item.Temperature</td>
+                <td>@item.Humidity</td>
+                <td>@item.Td</td>
+                <td>@item.AtmosphericPressure</td>
+                <td>@item.WindDirection</td>
+                <td>@item.WindSpeed</td>
+                <td>@item.Cloudiness</td>
+                <td>@item.H</td>
+                <td>@item.WeatherPhenomena</td>
 
             </tr>
-    }
+        }
     </table>
-@if (Model.PageViewModel.HasPreviousPage)
-{
-    <a asp-action="Archive"
+
+    @if (Model.PageViewModel.HasPreviousPage)
+    {
+        <button asp-action="Archive"
        asp-route-page="@(Model.PageViewModel.PageNumber - 1)"
        class="btn btn-outline-dark">
-        Назад
-    </a>
-}
-@if (Model.PageViewModel.HasNextPage)
-{
-    <a asp-action="Archive"
+            Назад
+        </button>
+    }
+    @if (Model.PageViewModel.HasNextPage)
+    {
+        <button asp-action="Archive"
        asp-route-page="@(Model.PageViewModel.PageNumber + 1)"
-       class="btn btn-outline-dark">
-        Вперед
-    </a>
-    <a>Стр. @Model.PageViewModel.PageNumber из @Model.PageViewModel.TotalPages</a>
-}
+       class="btn btn-outline-dark" >
+            Вперед
+        </button>
+        <a>Стр. @Model.PageViewModel.PageNumber из @Model.PageViewModel.TotalPages</a>
+    }
 </div>
+ </form>
+
+
+}
+
 
 

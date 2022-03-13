@@ -10,6 +10,9 @@ namespace WeatherReports.Models
     public class ArchiveViewModel
     {
         public IEnumerable<Weather> Weathers { get; set; }
-        public PageViewModel PageViewModel { get; set; }
+        public PageViewModel PageViewModel { get; set; }//Указанная страниа
+        public string SelectedMonth { get; set; }// Введенный месяц
+        public string SelectedYear { get; set; }//Введенный год
+
     }
 }
